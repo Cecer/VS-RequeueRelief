@@ -5,14 +5,14 @@ using Vintagestory.API.Server;
 
 namespace ModDownloadQueueBypass;
 
-class BypassTicketManager(ICoreServerAPI api)
+public class BypassTicketManager(ICoreServerAPI api)
 {
     private readonly Dictionary<string, QueueBypassTicket> _ticketsByPlayerUid = [];
-    private readonly Dictionary<QueueBypassTicket, string> _playerUidsByTicket = [];
     
-    public event Action<QueueBypassTicket> OnTicketIssued;
-    public event Action<QueueBypassTicket> OnTicketInvalidate;
+    public event Action<QueueBypassTicket>? OnTicketIssued;
+    public event Action<QueueBypassTicket>? OnTicketInvalidate;
     
+    // ReSharper disable once InconsistentlySynchronizedField
     public int ActiveTicketCount => _ticketsByPlayerUid.Count;
 
     public bool HasBypassTicket(string playerUid, bool invalidateIfValid)
@@ -37,7 +37,6 @@ class BypassTicketManager(ICoreServerAPI api)
         {
             InvalidateAllTicketsByPlayer(playerUid);
             _ticketsByPlayerUid[playerUid] = ticket;
-            _playerUidsByTicket[ticket] = playerUid;
         }
         api.Logger.Notification($"[MDQB] Bypass ticket issued for player {playerUid}");
         OnTicketIssued?.Invoke(ticket);
@@ -73,8 +72,7 @@ class BypassTicketManager(ICoreServerAPI api)
                 // Already invalidated
                 return;
             }
-            
-            _playerUidsByTicket.Remove(ticket);
+
             api.Event.UnregisterCallback(ticket.ListenerId);
             ticket.ListenerId = -1;
 
@@ -83,7 +81,7 @@ class BypassTicketManager(ICoreServerAPI api)
                 _ticketsByPlayerUid.Remove(ticket.PlayerId);
             }
         }
-        OnTicketInvalidate(ticket);
+        OnTicketInvalidate?.Invoke(ticket);
     }
 
     public void Reset()
@@ -91,7 +89,6 @@ class BypassTicketManager(ICoreServerAPI api)
         lock (_ticketsByPlayerUid)
         {
             _ticketsByPlayerUid.Clear();
-            _playerUidsByTicket.Clear();
         }
         api.Logger.Notification("[MDQB] Invalidating all bypass tickets");
     }

@@ -82,13 +82,13 @@ class ModDownloadQueueAPIEventHandler : DefaultQueueAPIEventHandler, IQueueAPIEv
         return base.RequestAcceptance(client);
     }
 
-    public void OnClientAccepted(ConnectedClient client)
+    public override void OnClientAccepted(ConnectedClient client)
     {
         _recentlyJoinedClients.Add(client.Id);
         _api.Event.RegisterCallback(_ => _recentlyJoinedClients.Remove(client.Id), (int) _quickDisconnectThreshold.TotalMilliseconds, true);
     }
 
-    public void OnClientDisconnect(ConnectedClient client)
+    public override void OnClientDisconnect(ConnectedClient client)
     {
         if (_recentlyJoinedClients.Remove(client.Id))
         {
@@ -98,13 +98,13 @@ class ModDownloadQueueAPIEventHandler : DefaultQueueAPIEventHandler, IQueueAPIEv
         base.OnClientDisconnect(client);
     }
 
-    public void OnAttached(IQueueAPIEventHandler? previousHandler)
+    public override void OnAttached(IQueueAPIEventHandler? previousHandler)
     {
         _bypassTicketManager.Reset();
         _recentlyJoinedClients.Clear();
     }
 
-    public void OnDetached(IQueueAPIEventHandler? newHandler)
+    public override void OnDetached(IQueueAPIEventHandler? newHandler)
     {
         _bypassTicketManager.Reset();
         _recentlyJoinedClients.Clear();
