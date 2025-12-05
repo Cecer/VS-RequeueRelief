@@ -12,7 +12,7 @@ namespace RequeueRelief;
 /// <summary>
 /// Extends the vanilla-like behaviour by allowing players to bypass the queue if they recently joined then immediately disconnected. Likely due to mod downloads..
 /// </summary>
-class RequeueReliefEventHandler : DefaultQueueAPIEventHandler, IQueueAPIEventHandler
+class RequeueReliefHandler : DefaultQueueAPIHandler, IQueueAPIHandler
 {
     private readonly ICoreServerAPI _api;
 
@@ -28,7 +28,7 @@ class RequeueReliefEventHandler : DefaultQueueAPIEventHandler, IQueueAPIEventHan
 
     public int WorldRemainingCapacity => WorldTotalCapacity - WorldPopulation - _bypassTicketManager.ActiveTicketCount;
 
-    public RequeueReliefEventHandler(ServerMain server, BypassTicketManager ticketManager, Config config) : base(server)
+    public RequeueReliefHandler(ServerMain server, BypassTicketManager ticketManager, Config config) : base(server)
     {
         _api = (ICoreServerAPI) server.Api;
         _bypassTicketManager = ticketManager;
@@ -44,7 +44,7 @@ class RequeueReliefEventHandler : DefaultQueueAPIEventHandler, IQueueAPIEventHan
         };
         _bypassTicketManager.OnTicketInvalidate += _ =>
         {
-            var worldCapacity = (this as IQueueAPIEventHandler).WorldRemainingCapacity;
+            var worldCapacity = (this as IQueueAPIHandler).WorldRemainingCapacity;
             for (; worldCapacity > 0; worldCapacity--)
             {
                 QueuedClient? queuedClient = Queue.RemoveNext();
@@ -110,13 +110,13 @@ class RequeueReliefEventHandler : DefaultQueueAPIEventHandler, IQueueAPIEventHan
         base.OnClientDisconnect(client, othersReason, theirReason);
     }
 
-    public override void OnAttached(IQueueAPIEventHandler? previousHandler)
+    public override void OnAttached(IQueueAPIHandler? previousHandler)
     {
         _bypassTicketManager.Reset();
         _disconnectReprocessor.Reset();
     }
 
-    public override void OnDetached(IQueueAPIEventHandler? newHandler)
+    public override void OnDetached(IQueueAPIHandler? newHandler)
     {
         _bypassTicketManager.Reset();
         _disconnectReprocessor.Reset();

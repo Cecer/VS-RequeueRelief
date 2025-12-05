@@ -8,7 +8,7 @@ namespace RequeueRelief;
 public class RequeueReliefModSystem : ModSystem
 {
     private Config _config = null!;
-    private RequeueReliefEventHandler _handler = null!;
+    private RequeueReliefHandler _handler = null!;
     private BypassTicketManager _ticketManager = null!;
 
     public override bool ShouldLoad(EnumAppSide forSide) => forSide == EnumAppSide.Server;
@@ -17,7 +17,7 @@ public class RequeueReliefModSystem : ModSystem
     {
         _config = Config.Load(api);
         _ticketManager = new BypassTicketManager(api);
-        _handler = new RequeueReliefEventHandler(api.GetInternalServer(), _ticketManager, _config);
+        _handler = new RequeueReliefHandler(api.GetInternalServer(), _ticketManager, _config);
         api.ModLoader.GetModSystem<QueueAPIModSystem>().Handler = _handler;
 
         new RootCommand(_config, _ticketManager, _handler, api).Register(api.ChatCommands);

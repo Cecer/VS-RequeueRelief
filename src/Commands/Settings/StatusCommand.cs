@@ -7,7 +7,7 @@ using Vintagestory.API.Server;
 
 namespace RequeueRelief.Commands.Settings;
 
-internal class StatusCommand(Config config, BypassTicketManager ticketManager, RequeueReliefEventHandler handler, ICoreServerAPI api) : Command("status")
+internal class StatusCommand(Config config, BypassTicketManager ticketManager, RequeueReliefHandler handler, ICoreServerAPI api) : Command("status")
 {
     protected override string? Description { get; init; } = "View the status of the queue.";
 

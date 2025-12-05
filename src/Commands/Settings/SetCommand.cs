@@ -12,7 +12,7 @@ internal class SetCommand : Command
 
     protected sealed override Command[] SubCommands { get; init; }
 
-    public SetCommand(Config config, RequeueReliefEventHandler queueEventHandler, ICoreAPI api) : base("set")
+    public SetCommand(Config config, RequeueReliefHandler queueHandler, ICoreAPI api) : base("set")
     {
         RequiredPrivilege = config.Privileges.Configure;
         SubCommands = typeof(Config.TimingsConfig).GetFields()
