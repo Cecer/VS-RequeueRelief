@@ -12,7 +12,7 @@ namespace RequeueRelief;
 /// <summary>
 /// Extends the vanilla-like behaviour by allowing players to bypass the queue if they recently joined then immediately disconnected. Likely due to mod downloads..
 /// </summary>
-class RequeueReliefHandler : DefaultQueueAPIHandler, IQueueAPIHandler
+class RequeueReliefHandler : DefaultQueueAPIHandler
 {
     private readonly ICoreServerAPI _api;
 
@@ -26,6 +26,10 @@ class RequeueReliefHandler : DefaultQueueAPIHandler, IQueueAPIHandler
     /// </summary>
     private readonly BypassTicketManager _bypassTicketManager;
 
+    /// <summary>
+    /// The number of free player slots in the world.
+    /// </summary>
+    /// <remarks>We subtract the active ticket count from the actual remaining slots capacity to essentially reserve a slot for each active ticket.</remarks>'
     public int WorldRemainingCapacity => WorldTotalCapacity - WorldPopulation - _bypassTicketManager.ActiveTicketCount;
 
     public RequeueReliefHandler(ServerMain server, BypassTicketManager ticketManager, Config config) : base(server)

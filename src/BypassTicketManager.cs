@@ -19,10 +19,13 @@ public class BypassTicketManager(ICoreServerAPI api)
     {
         lock (_ticketsByPlayerUid)
         {
-            if (_ticketsByPlayerUid.TryGetValue(playerUid, out var ticket) && ticket.IsValid && invalidateIfValid)
+            if (_ticketsByPlayerUid.TryGetValue(playerUid, out var ticket) && ticket.IsValid)
             {
-                api.Logger.Notification($"[RequeueRelief] Consuming bypass ticket for player {playerUid}");
-                InvalidateTicket(ticket);
+                if (invalidateIfValid)
+                {
+                    api.Logger.Notification($"[RequeueRelief] Consuming bypass ticket for player {playerUid}");
+                    InvalidateTicket(ticket);
+                }
                 return true;
             }
         }
@@ -52,7 +55,7 @@ public class BypassTicketManager(ICoreServerAPI api)
 
     public void InvalidateAllTicketsByPlayer(string playerUid)
     {
-        api.Logger.Notification($"[RequeueRelief] Invalidate all bypass ticket issued for player {playerUid}");
+        api.Logger.Notification($"[RequeueRelief] Invalidate all bypass tickets issued for player {playerUid}");
         lock (_ticketsByPlayerUid)
         {
             if (_ticketsByPlayerUid.Remove(playerUid, out var ticket))
@@ -88,6 +91,11 @@ public class BypassTicketManager(ICoreServerAPI api)
     {
         lock (_ticketsByPlayerUid)
         {
+            foreach (var ticket in _ticketsByPlayerUid.Values)
+            {
+                api.Event.UnregisterCallback(ticket.ListenerId);
+                ticket.ListenerId = -1;
+            }
             _ticketsByPlayerUid.Clear();
         }
         api.Logger.Notification("[RequeueRelief] Invalidating all bypass tickets");

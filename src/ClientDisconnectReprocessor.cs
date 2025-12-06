@@ -11,7 +11,7 @@ class ClientDisconnectReprocessor(Config config)
     private readonly string _crashReason = Lang.Get("The Players client crashed");
 
     /// <summary>
-    /// Holds the time each client was accepted into the game. Entries are removed from this they disconnect.
+    /// Holds the time each client was accepted into the game. Entries are removed from this when they disconnect.
     /// </summary>
     private readonly IDictionary<int, DateTimeOffset> _acceptedTimes = new Dictionary<int, DateTimeOffset>();
 

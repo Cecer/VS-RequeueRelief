@@ -15,7 +15,7 @@ public class Config
     public static Config Load(ICoreAPI api) => api.LoadModConfig<Config>(ConfigFileName) ?? new Config();
     public static void Save(ICoreAPI api, Config config) => api.StoreModConfig(config, ConfigFileName);
 
-    public struct PrivilegesConfig
+    public class PrivilegesConfig
     {
         [ConfigDescription("""
                            The privilege required to view the basic status of the queue.
@@ -55,7 +55,7 @@ public class Config
         public PrivilegesConfig() { }
     }
 
-    public struct TimingsConfig
+    public class TimingsConfig
     {
         // An arbitrary value. I want to avoid extreme values.
         private const double TenYears = 315360000.0;
