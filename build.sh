@@ -9,9 +9,11 @@ project_file="$(find "$project_dir" -mindepth 1 -maxdepth 1 -name "*.csproj")";
 project_name="$(basename "$project_file")";
 project_name="${project_name%%.csproj}";
 secrets_file="$(realpath "$project_dir/../.secrets.env")";
-version="$(jq --raw-output .version assets/modinfo.json)";
+version="$(jq --raw-output .version "$project_dir/assets/modinfo.json")";
 
 printf "[BuildScript] Project information:\n  Path: %s\n  Name: %s\n  Version: %s\n" "$project_dir" "$project_name" "$version";
+
+cd "$project_dir";
 
 printf "[BuildScript] Syncing project file\n";
 for tag in Version AssemblyVersion FileVersion; do
